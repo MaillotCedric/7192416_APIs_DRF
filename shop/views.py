@@ -16,4 +16,4 @@ class ProductAPIViewSet(ReadOnlyModelViewSet):
     serializer_class = ProductSerializer
 
     def get_queryset(self):
-        return Product.objects.all()
+        return Product.objects.filter(active=True)
