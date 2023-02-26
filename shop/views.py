@@ -12,9 +12,8 @@ class CategoryAPIViewSet(ReadOnlyModelViewSet):
     def get_queryset(self):
         return Category.objects.all()
 
-class ProductAPIView(APIView):
-    def get(self, *args, **kwargs):
-        produits = Product.objects.all()
-        serializer = ProductSerializer(produits, many=True)
+class ProductAPIViewSet(ReadOnlyModelViewSet):
+    serializer_class = ProductSerializer
 
-        return Response(serializer.data)
+    def get_queryset(self):
+        return Product.objects.all()
