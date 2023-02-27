@@ -3,11 +3,12 @@ from rest_framework.test import APITestCase
 
 from shop.models import Category
 
-class TestCategory(APITestCase):
-    url = reverse_lazy("category-list") # <basename>-list
-
+class ShopAPITestCase(APITestCase):
     def format_datetime(self, value):
         return value.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+
+class TestCategory(ShopAPITestCase):
+    url = reverse_lazy("category-list") # <basename>-list
     
     def test_list(self): # test si les catégories retournées sont seulement celles qui sont actives
         category = Category.objects.create(name="Fruits", active=True)
