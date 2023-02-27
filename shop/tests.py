@@ -39,7 +39,7 @@ class TestCategory(ShopAPITestCase):
             } for category in [self.category, self.category_2]
         ]
 
-        self.assertEqual(response.json(), expected)
+        self.assertEqual(response.json()["results"], expected)
     
     def test_create(self):
         category_count = Category.objects.count()
@@ -68,13 +68,13 @@ class TestProduct(ShopAPITestCase):
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(self.get_products_details([self.product, self.product_2]), response.json())
+        self.assertEqual(self.get_products_details([self.product, self.product_2]), response.json()["results"])
     
     def test_list_filter(self):
         response = self.client.get(self.url + "?category_id=%i" %self.category.pk)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(self.get_products_details([self.product]), response.json())
+        self.assertEqual(self.get_products_details([self.product]), response.json()["results"])
     
     def test_create(self):
         product_count = Product.objects.count()
