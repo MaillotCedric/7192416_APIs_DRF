@@ -22,6 +22,33 @@ class ShopAPITestCase(APITestCase):
 
 class TestCategory(ShopAPITestCase):
     url = reverse_lazy("category-list") # <basename>-list
+
+    def get_products_details(self, products):
+            return [
+                {
+                    "id": product.pk,
+                    "date_created": self.format_datetime(product.date_created),
+                    "date_updated": self.format_datetime(product.date_updated),
+                    "name": product.name,
+                    "category": product.category_id
+                } for product in products
+            ]
+    
+    def test_details(self):
+        url_detail = reverse("category-detail",kwargs={"pk": self.category.pk})
+        response = self.client.get(url_detail)
+
+        self.assertEqual(response.status_code, 200)
+
+        expected = {
+            "id": self.category.id,
+            "name": self.category.name,
+            "date_created": self.format_datetime(self.category.date_created),
+            "date_updated": self.format_datetime(self.category.date_updated),
+            "products": self.get_products_details(self.category.products.filter(active=True))
+        }
+
+        self.assertEqual(expected, response.json())
     
     def test_list(self): # test si les catégories retournées sont seulement celles qui sont actives
         response = self.client.get(self.url)
