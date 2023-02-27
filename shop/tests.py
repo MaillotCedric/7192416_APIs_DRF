@@ -1,7 +1,7 @@
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from rest_framework.test import APITestCase
 
-from shop.models import Category
+from shop.models import Category, Product
 
 class ShopAPITestCase(APITestCase):
     @classmethod
@@ -49,3 +49,42 @@ class TestCategory(ShopAPITestCase):
         self.assertEqual(response.status_code, 405)
 
         self.assertEqual(Category.objects.count(), category_count)
+
+class TestProduct(ShopAPITestCase):
+    url = reverse_lazy("product-list")
+
+    def get_products_details(self, products):
+        return [
+            {
+                "id": product.pk,
+                "date_created": self.format_datetime(product.date_created),
+                "date_updated": self.format_datetime(product.date_updated),
+                "name": product.name,
+                "category": product.category_id
+            } for product in products
+        ]
+    
+    def test_list(self):
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.get_products_details([self.product, self.product_2]), response.json())
+    
+    def test_list_filter(self):
+        response = self.client.get(self.url + "?category_id=%i" %self.category.pk)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.get_products_details([self.product]), response.json())
+    
+    def test_create(self):
+        product_count = Product.objects.count()
+        response = self.client.post(self.url, data={"name": "Nouvelle catégorie"})
+
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(Product.objects.count(), product_count)
+    
+    def test_delete(self):
+        response = self.client.delete(reverse("product-detail", kwargs={"pk": self.product.pk}))
+
+        self.assertEqual(response.status_code, 405)
+        self.product.refresh_from_db()
