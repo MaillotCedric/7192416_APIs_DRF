@@ -4,7 +4,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from shop.models import Category, Product, Article
 
-from shop.serializers import CategoryDetailsSerializer, CategoryListSerializer, ProductSerializer, ArticleSerializer
+from shop.serializers import CategoryDetailsSerializer, CategoryListSerializer, ProductDetailsSerializer, ProductListSerializer, ArticleSerializer
 
 class CategoryAPIViewSet(ReadOnlyModelViewSet):
     serializer_class = CategoryListSerializer
@@ -20,7 +20,8 @@ class CategoryAPIViewSet(ReadOnlyModelViewSet):
         return super().get_serializer_class()
 
 class ProductAPIViewSet(ReadOnlyModelViewSet):
-    serializer_class = ProductSerializer
+    serializer_class = ProductListSerializer
+    details_serializer_class = ProductDetailsSerializer
 
     def get_queryset(self):
         queryset = Product.objects.filter(active=True)
@@ -30,6 +31,12 @@ class ProductAPIViewSet(ReadOnlyModelViewSet):
             queryset = queryset.filter(category_id=category_id)
         
         return queryset
+    
+    def get_serializer_class(self):
+        if self.action == "retrieve":
+            return self.details_serializer_class
+
+        return super().get_serializer_class()
 
 class ArticleAPIViewSet(ReadOnlyModelViewSet):
     serializer_class = ArticleSerializer
