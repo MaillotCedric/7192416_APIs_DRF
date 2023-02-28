@@ -44,6 +44,12 @@ class ProductAPIViewSet(ReadOnlyModelViewSet):
             return self.details_serializer_class
 
         return super().get_serializer_class()
+    
+    @action(detail=True, methods=["post"])
+    def disable(self, request, pk):
+        self.get_object().disable()
+
+        return Response()
 
 class ArticleAPIViewSet(ReadOnlyModelViewSet):
     serializer_class = ArticleSerializer
