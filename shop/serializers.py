@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from rest_framework.serializers import ModelSerializer, SerializerMethodField, ValidationError
 
 from shop.models import Category, Product, Article
 
@@ -28,6 +28,12 @@ class CategoryListSerializer(ModelSerializer):
     class Meta:
         model = Category
         fields = ["id", "name", "date_created", "date_updated"]
+    
+    def validate_name(self, value):
+        if Category.objects.filter(name=value).exists():
+            raise ValidationError("La catégorie existe déjà")
+        
+        return value
 
 class CategoryDetailsSerializer(ModelSerializer):
     products = SerializerMethodField()
