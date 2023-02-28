@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework.decorators import action
 
 from shop.models import Category, Product, Article
 
@@ -18,6 +19,12 @@ class CategoryAPIViewSet(ReadOnlyModelViewSet):
             return self.details_serializer_class
         
         return super().get_serializer_class()
+    
+    @action(detail=True, methods=["post"])
+    def disable(self, request, pk):
+        self.get_object().disable()
+
+        return Response()
 
 class ProductAPIViewSet(ReadOnlyModelViewSet):
     serializer_class = ProductListSerializer
