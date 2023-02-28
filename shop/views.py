@@ -7,18 +7,21 @@ from shop.models import Category, Product, Article
 
 from shop.serializers import CategoryDetailsSerializer, CategoryListSerializer, ProductDetailsSerializer, ProductListSerializer, ArticleSerializer
 
-class CategoryAPIViewSet(ReadOnlyModelViewSet):
+class MultipleSerializerMixin:
+    details_serializer_class = None
+
+    def get_serializer_class(self):
+        if self.action == "retrieve" and self.details_serializer_class is not None:
+            return self.details_serializer_class
+        
+        return super().get_serializer_class()
+
+class CategoryAPIViewSet(MultipleSerializerMixin, ReadOnlyModelViewSet):
     serializer_class = CategoryListSerializer
     details_serializer_class = CategoryDetailsSerializer
 
     def get_queryset(self):
         return Category.objects.filter(active=True)
-    
-    def get_serializer_class(self):
-        if self.action == "retrieve":
-            return self.details_serializer_class
-        
-        return super().get_serializer_class()
     
     @action(detail=True, methods=["post"])
     def disable(self, request, pk):
@@ -26,7 +29,7 @@ class CategoryAPIViewSet(ReadOnlyModelViewSet):
 
         return Response()
 
-class ProductAPIViewSet(ReadOnlyModelViewSet):
+class ProductAPIViewSet(MultipleSerializerMixin, ReadOnlyModelViewSet):
     serializer_class = ProductListSerializer
     details_serializer_class = ProductDetailsSerializer
 
@@ -38,12 +41,6 @@ class ProductAPIViewSet(ReadOnlyModelViewSet):
             queryset = queryset.filter(category_id=category_id)
         
         return queryset
-    
-    def get_serializer_class(self):
-        if self.action == "retrieve":
-            return self.details_serializer_class
-
-        return super().get_serializer_class()
     
     @action(detail=True, methods=["post"])
     def disable(self, request, pk):
