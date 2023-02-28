@@ -34,6 +34,12 @@ class CategoryListSerializer(ModelSerializer):
             raise ValidationError("La catégorie existe déjà")
         
         return value
+    
+    def validate(self, data):
+        if data["name"] not in data["description"]:
+            raise ValidationError("Le nom de la catégorie doit être présent dans la description")
+        
+        return data
 
 class CategoryDetailsSerializer(ModelSerializer):
     products = SerializerMethodField()
