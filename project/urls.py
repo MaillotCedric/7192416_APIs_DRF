@@ -3,13 +3,14 @@ from django.urls import path, include
 
 from rest_framework import routers
 
-from shop.views import CategoryAPIViewSet, ProductAPIViewSet, ArticleAPIViewSet
+from shop.views import CategoryAPIViewSet, ProductAPIViewSet, ArticleAPIViewSet, AdminCategoryAPIViewSet
 
 router = routers.SimpleRouter()
 
 router.register("category", CategoryAPIViewSet, basename="category")
 router.register("product", ProductAPIViewSet, basename="product")
 router.register("article", ArticleAPIViewSet, basename="article")
+router.register("admin/category", AdminCategoryAPIViewSet, basename="admin-category")
 
 urlpatterns = [
     path('admin/', admin.site.urls),

@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework.decorators import action
 
 from shop.models import Category, Product, Article
@@ -59,3 +59,10 @@ class ArticleAPIViewSet(ReadOnlyModelViewSet):
             queryset = queryset.filter(product_id=product_id)
 
         return queryset
+
+class AdminCategoryAPIViewSet(MultipleSerializerMixin, ModelViewSet):
+    serializer_class = CategoryListSerializer
+    details_serializer_class = CategoryDetailsSerializer
+
+    def get_queryset(self):
+        return Category.objects.all()
