@@ -45,7 +45,7 @@ class CategoryDetailsSerializer(ModelSerializer):
     products = SerializerMethodField()
     class Meta:
         model = Category
-        fields = ["id", "name", "date_created", "date_updated", "products"]
+        fields = ["id", "name", "date_created", "date_updated", "description", "products"]
     
     def get_products(self, instance):
         queryset = instance.products.filter(active=True)
